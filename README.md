@@ -108,6 +108,14 @@ python scripts/evaluate.py --model_path MODEL_PATH --tasks recon gen opt
 - `gen`: generate new material structures by sampling from the latent space. Outputs can be found in `eval_gen.pt`.
 - `opt`: generate new material strucutre by minimizing the trained property in the latent space (requires `model.predict_property=True`). Outputs can be found in `eval_opt.pt`.
 
+`eval_recon.pt`, `eval_gen.pt`, `eval_opt.pt` are pytorch pickles files containing multiple tensors that describes the structures of `M` materials batched together. Each material can have different number of atoms, and we assume there are in total `N` atoms. `num_evals` denote the number of Langevin dynamics we perform for each material.
+
+- `frac_coords`: fractional coordinates of each atom, shape `(num_evals, N, 3)`
+- `atom_types`: atomic number of each atom, shape `(num_evals, N)`
+- `lengths`: the lengths of the lattice, shape `(num_evals, M, 3)`
+- `angles`: the angles of the lattice, shape `(num_evals, M, 3)`
+- `num_atoms`: the number of atoms in each material, shape `(num_evals, M)`
+
 ## Evaluating model
 
 To compute evaluation metrics, run the following command:

@@ -48,7 +48,13 @@ If you develop a new model, you can use our evaluation scripts to obtain the met
 python scripts/compute_metrics.py --root_path ROOT_PATH --tasks recon gen opt
 ```
 
-The script will read files named `eval_recon.pt`, `eval_gen.pt`, `eval_opt.pt` in `ROOT_PATH`, for the tasks of `recon`, `gen`, `opt` respectively. `*.pt` are pickle files containing pytorch tensors, which stores the generated material structures. They can be generated using a different code and evaluated using our script.
+The script will read files named `eval_recon.pt`, `eval_gen.pt`, `eval_opt.pt` in `ROOT_PATH`, for the tasks of `recon`, `gen`, `opt` respectively. `*.pt` are pytorch pickles files containing multiple tensors that describes the structures of `M` materials batched together. They can be generated using a different code and evaluated using our script. Each material can have different number of atoms, and we assume there are in total `N` atoms. `num_evals` denote the number of Langevin dynamics we perform for each material.
+
+- `frac_coords`: fractional coordinates of each atom, shape `(num_evals, N, 3)`
+- `atom_types`: atomic number of each atom, shape `(num_evals, N)`
+- `lengths`: the lengths of the lattice, shape `(num_evals, M, 3)`
+- `angles`: the angles of the lattice, shape `(num_evals, M, 3)`
+- `num_atoms`: the number of atoms in each material, shape `(num_evals, M)`
 
 ## Citation
 
