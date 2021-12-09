@@ -2,6 +2,11 @@
 
 This software implementes Crystal Diffusion Variational AutoEncoder (CDVAE), which generates the periodic structure of materials.
 
+It has several main functionalities:
+
+- Generate novel, stable materials by learning from a dataset containing existing material structures.
+- Generate materials by optimizing a specific property in the latent space, i.e. inverse design.
+
 [[Paper]](https://arxiv.org/abs/2110.06197) [[Datasets]](data/)
 
 <p align="center">
