@@ -1,0 +1,141 @@
+data:
+  root_path: ${oc.env:PROJECT_ROOT}/data/perov_5
+  prop: heat_ref
+  num_targets: 1
+  niggli: true
+  primitive: false
+  graph_method: crystalnn
+  lattice_scale_method: scale_length
+  preprocess_workers: 30
+  readout: mean
+  max_atoms: 20
+  otf_graph: false
+  train_max_epochs: 1000
+  early_stopping_patience: 100000
+  teacher_forcing_max_epoch: 1500
+  datamodule:
+    _target_: cdvae.pl_data.datamodule.CrystDataModule
+    datasets:
+      train:
+        _target_: cdvae.pl_data.dataset.CrystDataset
+        name: Formation energy train
+        path: ${data.root_path}/train.csv
+        prop: ${data.prop}
+        niggli: ${data.niggli}
+        primitive: ${data.primitive}
+        graph_method: ${data.graph_method}
+        lattice_scale_method: ${data.lattice_scale_method}
+        preprocess_workers: ${data.preprocess_workers}
+      val:
+      - _target_: cdvae.pl_data.dataset.CrystDataset
+        name: Formation energy val
+        path: ${data.root_path}/val.csv
+        prop: ${data.prop}
+        niggli: ${data.niggli}
+        primitive: ${data.primitive}
+        graph_method: ${data.graph_method}
+        lattice_scale_method: ${data.lattice_scale_method}
+        preprocess_workers: ${data.preprocess_workers}
+      test:
+      - _target_: cdvae.pl_data.dataset.CrystDataset
+        name: Formation energy test
+        path: ${data.root_path}/test.csv
+        prop: ${data.prop}
+        niggli: ${data.niggli}
+        primitive: ${data.primitive}
+        graph_method: ${data.graph_method}
+        lattice_scale_method: ${data.lattice_scale_method}
+        preprocess_workers: ${data.preprocess_workers}
+    num_workers:
+      train: 0
+      val: 0
+      test: 0
+    batch_size:
+      train: 512
+      val: 256
+      test: 256
+logging:
+  val_check_interval: 5
+  progress_bar_refresh_rate: 20
+  wandb:
+    name: ${expname}
+    project: crystal_generation_mit
+    entity: null
+    log_model: true
+    mode: online
+    group: ${expname}
+  wandb_watch:
+    log: all
+    log_freq: 500
+  lr_monitor:
+    logging_interval: step
+    log_momentum: false
+model:
+  encoder:
+    _target_: cdvae.pl_modules.gnn.DimeNetPlusPlusWrap
+    num_targets: ${data.num_targets}
+    hidden_channels: 128
+    num_blocks: 4
+    int_emb_size: 64
+    basis_emb_size: 8
+    out_emb_channels: 256
+    num_spherical: 7
+    num_radial: 6
+    otf_graph: ${data.otf_graph}
+    cutoff: 7.0
+    max_num_neighbors: 20
+    envelope_exponent: 5
+    num_before_skip: 1
+    num_after_skip: 2
+    num_output_layers: 3
+    readout: ${data.readout}
+  _target_: cdvae.pl_modules.model.CrystGNN_Supervise
+  use_orientation: false
+  hidden_dim: 128
+  fc_num_layers: 4
+  use_pe: false
+optim:
+  optimizer:
+    _target_: torch.optim.Adam
+    lr: 0.0001
+    betas:
+    - 0.9
+    - 0.999
+    eps: 1.0e-08
+    weight_decay: 0
+  use_lr_scheduler: true
+  lr_scheduler:
+    _target_: torch.optim.lr_scheduler.CosineAnnealingWarmRestarts
+    T_0: 10
+    T_mult: 2
+    eta_min: 0
+    last_epoch: -1
+    verbose: false
+train:
+  deterministic: false
+  random_seed: 42
+  pl_trainer:
+    fast_dev_run: false
+    gpus: 1
+    precision: 32
+    max_epochs: ${data.train_max_epochs}
+    accumulate_grad_batches: 1
+    num_sanity_val_steps: 2
+    gradient_clip_val: 10.0
+    profiler: simple
+  monitor_metric: val_loss
+  monitor_metric_mode: min
+  early_stopping:
+    patience: ${data.early_stopping_patience}
+    verbose: false
+  model_checkpoints:
+    save_top_k: 1
+    verbose: false
+expname: perovskite_supervise_energy
+core:
+  version: 0.0.1
+  tags:
+  - ${now:%Y-%m-%d}
+gpu_list:
+- 0
+n_jobs: 1

@@ -1,0 +1,9 @@
+_target_: cdvae.pl_modules.model.CrystGNN_Supervise
+use_orientation: false
+hidden_dim: 128
+fc_num_layers: 4
+use_pe: false
+
+
+defaults:
+  - encoder: dimenet

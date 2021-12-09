@@ -1,0 +1,27 @@
+_target_: cdvae.pl_modules.model.CDVAE
+hidden_dim: 256
+latent_dim: 256
+fc_num_layers: 1
+max_atoms: ${data.max_atoms}
+cost_natom: 1.
+cost_coord: 10.
+cost_type: 1.
+cost_lattice: 10.
+cost_composition: 1.
+cost_edge: 10.
+cost_property: 1.
+beta: 0.01
+teacher_forcing_lattice: true
+teacher_forcing_max_epoch: ${data.teacher_forcing_max_epoch}
+max_neighbors: 20  # maximum number of neighbors for OTF graph bulding in decoder
+radius: 7.  # maximum search radius for OTF graph building in decoder
+sigma_begin: 10.
+sigma_end: 0.01
+type_sigma_begin: 5.
+type_sigma_end: 0.01
+num_noise_level: 50
+predict_property: False
+
+defaults:
+  - encoder: dimenet
+  - decoder: gemnet

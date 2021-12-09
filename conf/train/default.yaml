@@ -1,0 +1,28 @@
+# reproducibility
+deterministic: False
+random_seed: 42
+
+# training
+
+pl_trainer:
+  fast_dev_run: False # Enable this for debug purposes
+  gpus: 1
+  precision: 32
+  # max_steps: 10000
+  max_epochs: ${data.train_max_epochs}
+  accumulate_grad_batches: 1
+  num_sanity_val_steps: 2
+  gradient_clip_val: 0.5
+  gradient_clip_algorithm: value
+  profiler: simple
+
+monitor_metric: 'val_loss'
+monitor_metric_mode: 'min'
+
+early_stopping:
+  patience: ${data.early_stopping_patience} # 60
+  verbose: False
+
+model_checkpoints:
+  save_top_k: 1
+  verbose: False

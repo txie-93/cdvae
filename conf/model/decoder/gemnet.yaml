@@ -1,0 +1,6 @@
+_target_: cdvae.pl_modules.decoder.GemNetTDecoder
+hidden_dim: 128
+latent_dim: ${model.latent_dim}
+max_neighbors: ${model.max_neighbors}
+radius: ${model.radius}
+scale_file: ${oc.env:PROJECT_ROOT}/cdvae/pl_modules/gemnet/gemnet-dT.json
