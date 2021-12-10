@@ -333,10 +333,9 @@ def main(args):
     print(all_metrics)
 
     if args.label == '':
-        # TODO: rename this.
-        metrics_out_file = 'eval_metrics_refactor.json'
+        metrics_out_file = 'eval_metrics.json'
     else:
-        metrics_out_file = f'eval_metrics_refactor_{args.label}.json'
+        metrics_out_file = f'eval_metrics_{args.label}.json'
     metrics_out_file = os.path.join(args.root_path, metrics_out_file)
 
     # only overwrite metrics computed in the new run.
