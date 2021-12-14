@@ -56,6 +56,10 @@ The script will read files named `eval_recon.pt`, `eval_gen.pt`, `eval_opt.pt` i
 - `angles`: the angles of the lattice, shape `(num_evals, M, 3)`
 - `num_atoms`: the number of atoms in each material, shape `(num_evals, M)`
 
+## Questions and comments
+
+We hope these datasets and evaluation codes can be useful for the community to benchmark material generation models. If you have any questions or comments, please don't hesitate to reach out to Tian Xie (txie AT csail DOT mit DOT edu).
+
 ## Citation
 
 Please consider citing the following paper if you find these datasets and evaluation metrics useful.
