@@ -13,7 +13,7 @@ import torch.nn as nn
 from torch_scatter import scatter
 from torch_sparse import SparseTensor
 
-from crystvae.common.data_utils import (
+from cdvae.common.data_utils import (
     get_pbc_distances, radius_graph_pbc, frac_to_cart_coords)
 
 from .layers.atom_update_block import OutputBlock
