@@ -10,7 +10,7 @@ import torch
 
 from .base_layers import Dense
 
-from crystvae.pl_modules.embeddings import MAX_ATOMIC_NUM
+from cdvae.pl_modules.embeddings import MAX_ATOMIC_NUM
 
 
 class AtomEmbedding(torch.nn.Module):
