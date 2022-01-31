@@ -10,9 +10,10 @@ data:
   readout: mean
   max_atoms: 20
   otf_graph: false
+  eval_model_name: mp20
   train_max_epochs: 1000
   early_stopping_patience: 100000
-  teacher_forcing_max_epoch: 1000
+  teacher_forcing_max_epoch: 500
   datamodule:
     _target_: cdvae.pl_data.datamodule.CrystDataModule
     datasets:
@@ -51,7 +52,7 @@ data:
       val: 0
       test: 0
     batch_size:
-      train: 512
+      train: 256
       val: 256
       test: 256
 logging:
@@ -97,7 +98,7 @@ model:
 optim:
   optimizer:
     _target_: torch.optim.Adam
-    lr: 0.0001
+    lr: 0.001
     betas:
     - 0.9
     - 0.999
@@ -105,12 +106,10 @@ optim:
     weight_decay: 0
   use_lr_scheduler: true
   lr_scheduler:
-    _target_: torch.optim.lr_scheduler.CosineAnnealingWarmRestarts
-    T_0: 10
-    T_mult: 2
-    eta_min: 0
-    last_epoch: -1
-    verbose: false
+    _target_: torch.optim.lr_scheduler.ReduceLROnPlateau
+    factor: 0.6
+    patience: 30
+    min_lr: 0.0001
 train:
   deterministic: false
   random_seed: 42
@@ -121,7 +120,8 @@ train:
     max_epochs: ${data.train_max_epochs}
     accumulate_grad_batches: 1
     num_sanity_val_steps: 2
-    gradient_clip_val: 10.0
+    gradient_clip_val: 0.5
+    gradient_clip_algorithm: value
     profiler: simple
   monitor_metric: val_loss
   monitor_metric_mode: min
@@ -131,11 +131,8 @@ train:
   model_checkpoints:
     save_top_k: 1
     verbose: false
-expname: default_supervise_energy
+expname: mp_20_supervise
 core:
   version: 0.0.1
   tags:
   - ${now:%Y-%m-%d}
-gpu_list:
-- 0
-n_jobs: 1
