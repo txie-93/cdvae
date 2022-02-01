@@ -33,19 +33,10 @@ It has several main functionalities:
 
 The easiest way to install prerequisites is via [conda](https://conda.io/docs/index.html).
 
-### Pre-install step
-
-Install `conda-merge`:
-```bash
-pip install conda-merge
-```
-Check that you can invoke `conda-merge` by running `conda-merge -h`.
-
 ### GPU machines
 
 Run the following command to install the environment:
 ```bash
-conda-merge env.common.yml env.gpu.yml > env.yml
 conda env create -f env.yml
 ```
 Activate the conda environment with `conda activate cdvae`.
@@ -55,8 +46,7 @@ Install this package with `pip install -e .`.
 ### CPU-only machines
 
 ```bash
-conda-merge env.common.yml env.cpu.yml > env.yml
-conda env create -f env.yml
+conda env create -f env.cpu.yml
 conda activate cdvae
 pip install -e .
 ```
