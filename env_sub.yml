@@ -1,0 +1,39 @@
+channels:
+- pytorch
+- conda-forge
+- defaults
+dependencies:
+- ase=3.22
+- autopep8
+- cudatoolkit=10.2
+  #- ipywidgets
+  #- jupyterlab
+  #- matminer=0.7.3
+  #- matplotlib
+  #- nglview
+- pip
+  #- pylint
+  #- pymatgen=2020.12.31
+- python=3.8.*
+- pytorch-lightning=1.3.8
+- pytorch=1.9.0
+- seaborn
+- tqdm
+- pip:
+  - -f https://pytorch-geometric.com/whl/torch-1.9.0+cu102.html
+  - torch-geometric==1.7.2
+  - higher==0.2.1
+  - hydra-core==1.1.0
+  - hydra-joblib-launcher==1.1.5
+  - p-tqdm==1.3.3
+  - pytest
+  - python-dotenv
+  - smact==2.2.1
+  - streamlit==0.79.0
+  - torch-cluster
+  - torch-scatter
+  - torch-sparse
+  - torch-spline-conv
+  - torchdiffeq==0.0.1
+  - wandb==0.10.33
+name: cdvae
