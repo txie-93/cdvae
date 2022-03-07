@@ -43,6 +43,17 @@ Activate the conda environment with `conda activate cdvae`.
 
 Install this package with `pip install -e .`.
 
+### Faster conda installation
+
+We've noticed that the above command to install the dependencies from `env.yml` can take very long. A faster way to install the required packages is:
+```bash
+conda env create -f env_sub.yml
+conda activate cdvae
+conda install ipywidgets jupyterlab matplotlib pylint
+conda install -c conda-forge matminer=0.7.3 nglview pymatgen=2020.12.31
+pip install -e .
+```
+
 ### CPU-only machines
 
 ```bash
