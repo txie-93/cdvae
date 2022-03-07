@@ -51,6 +51,8 @@ conda env create -f env_sub.yml
 conda activate cdvae
 conda install ipywidgets jupyterlab matplotlib pylint
 conda install -c conda-forge matminer=0.7.3 nglview pymatgen=2020.12.31
+# Downgrade to fix a known issue with pytorch
+python3 -m pip install setuptools==59.5.0
 pip install -e .
 ```
 
