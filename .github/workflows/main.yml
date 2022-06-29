@@ -72,6 +72,7 @@ jobs:
         source "$HOME/.bashrc"
     - name: Activate conda
       run: |
+        which conda
         conda init bash
         conda activate cdvae
         pip install -e .
@@ -83,24 +84,3 @@ jobs:
         
         
 #      https://github.com/ben-heil/github_actions_test/blob/master/.github/workflows/miniconda.yml
-#    - name: Lint
-#      run: |
-#        pip install flake8 pytest pycodestyle pydocstyle
-#        pycodestyle --ignore E203,W503 --exclude=tests cdvae
-#        pydocstyle --match-dir=core --match-dir=io --match-dir=io --match-dir=ai --match-dir=analysis --match-dir=db --match-dir=tasks --count cdvae
-#        flake8 --ignore E203,W503 --exclude=tests --statistics --count --exit-zero cdvae
-#     - name: Test with pytest
-#       run: |
-#         export DGLBACKEND=pytorch
-#         pip install flake8 pytest pycodestyle pydocstyle codecov pytest-cov coverage 
-#         echo 'PIP freeze'
-#         pip freeze
-#         coverage run -m pytest
-#         coverage report -m
-#         codecov
-#         codecov --token="85bd9c5d-9e55-4f6d-bd69-350ee5e3bb41"
-#         echo 'Train folder'
-#         train_folder.py -h 
-#         echo 'Pre-trained models'
-#         pretrained.py -h
-#         #train_folder.py --root_dir "alignn/examples/sample_data" --config "alignn/examples/sample_data/config_example.json" --output_dir=temp
