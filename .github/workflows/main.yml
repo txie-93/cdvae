@@ -30,11 +30,11 @@ jobs:
       run: |
         mkdir WABDB
         mkdir HYDRA_JOBS
-        export HYDRA_FULL_ERROR=1
         conda env create -n cdvae --file env.ci.yml
         conda activate cdvae
         pip install -e .
         echo $PWD
+        export HYDRA_FULL_ERROR=1
         export PROJECT_ROOT=$PWD
         export WABDB=$PWD/WABDB 
         export WABDB_DIR=$PWD/WABDB
