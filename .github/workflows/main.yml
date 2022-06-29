@@ -20,6 +20,7 @@ jobs:
       run: |
         
         conda env create -n cdvae --file env.kc.yml  
+        source "$HOME/.bashrc"
         conda init bash
         conda activate cdvae
         pip install -e .
