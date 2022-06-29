@@ -30,3 +30,8 @@ jobs:
       run: |
         conda env create -n cdvae --file env.kc.yml
         conda activate cdvae
+        pip install -e .
+        export PROJECT_ROOT=$PWD
+        export WABDB=$PWD/WABDB 
+        export HYDRA_JOBS=$PWD/HYDRA_JOBS
+        python cdvae/run.py data=perov expname=perov model.predict_property=True
