@@ -64,18 +64,20 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
-    - name: Install dependencies
+    - name: Install conda
       run: |
         
         conda env create -n cdvae --file env.kc.yml  
         source "$HOME/.bashrc"
-        source $CONDA_PREFIX/etc/profile.d/conda.sh
-        #conda run -n cdvae /bin/bash
+    - name: Activate conda
+      run: |
         conda activate cdvae
         pip install -e .
         export PROJECT_ROOT=$PWD
         export WABDB=$PWD/WABDB 
-        export HYDRA_JOBS=$PWD/HYDRA_JOBS  
+        export HYDRA_JOBS=$PWD/HYDRA_JOBS 
+        echo 'DONE'
+        echo $WABDB
         
         
 #      https://github.com/ben-heil/github_actions_test/blob/master/.github/workflows/miniconda.yml
