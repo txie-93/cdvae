@@ -64,14 +64,16 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
-    - shell: bash
+    
     - name: Install conda
+    - shell: bash
       run: |
         conda init bash
         conda env create -n cdvae --file env.kc.yml  
         source "$HOME/.bashrc"
-    - shell: bash
+    
     - name: Activate conda
+    - shell: bash
       run: |
         which conda
         conda init bash
