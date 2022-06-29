@@ -19,7 +19,8 @@ jobs:
     - name: Install dependencies
       run: |
         
-        conda env create -n cdvae --file env.kc.yml        
+        conda env create -n cdvae --file env.kc.yml  
+        conda init bash
         conda activate cdvae
         pip install -e .
         export PROJECT_ROOT=$PWD
