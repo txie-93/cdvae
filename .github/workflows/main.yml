@@ -28,5 +28,5 @@ jobs:
     - name: Setup
       shell: bash -l {0}
       run: |
-        conda create --name=cdvae python=3.8
+        cconda env create -n cdvae --file env.kc.yml
         conda activate cdvae
