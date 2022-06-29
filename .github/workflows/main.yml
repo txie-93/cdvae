@@ -31,6 +31,7 @@ jobs:
         conda env create -n cdvae --file env.kc.yml
         conda activate cdvae
         pip install -e .
+        echo $PWD
         export PROJECT_ROOT=$PWD
         export WABDB=$PWD/WABDB 
         export HYDRA_JOBS=$PWD/HYDRA_JOBS
