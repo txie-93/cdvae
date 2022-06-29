@@ -48,31 +48,31 @@ jobs:
 
 
 
-jobs:
-  build:
+# jobs:
+#   build:
 
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: [3.9]
+#     runs-on: ubuntu-latest
+#     strategy:
+#       matrix:
+#         python-version: [3.9]
 
-    steps:
-    - uses: actions/checkout@v2
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
-      with:
-        python-version: ${{ matrix.python-version }}
-    - name: Install dependencies
-      run: |
+#     steps:
+#     - uses: actions/checkout@v2
+#     - name: Set up Python ${{ matrix.python-version }}
+#       uses: actions/setup-python@v2
+#       with:
+#         python-version: ${{ matrix.python-version }}
+#     - name: Install dependencies
+#       run: |
         
-        conda env create -n cdvae --file env.kc.yml  
-        source "$HOME/.bashrc"
-        conda run -n cdvae /bin/bash
-        conda activate cdvae
-        pip install -e .
-        export PROJECT_ROOT=$PWD
-        export WABDB=$PWD/WABDB 
-        export HYDRA_JOBS=$PWD/HYDRA_JOBS  
+#         conda env create -n cdvae --file env.kc.yml  
+#         source "$HOME/.bashrc"
+#         conda run -n cdvae /bin/bash
+#         conda activate cdvae
+#         pip install -e .
+#         export PROJECT_ROOT=$PWD
+#         export WABDB=$PWD/WABDB 
+#         export HYDRA_JOBS=$PWD/HYDRA_JOBS  
         
         
 #      https://github.com/ben-heil/github_actions_test/blob/master/.github/workflows/miniconda.yml
