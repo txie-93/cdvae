@@ -21,7 +21,7 @@ jobs:
         
         conda env create -n cdvae --file env.kc.yml  
         source "$HOME/.bashrc"
-        conda init bash
+        conda run -n cdvae /bin/bash
         conda activate cdvae
         pip install -e .
         export PROJECT_ROOT=$PWD
