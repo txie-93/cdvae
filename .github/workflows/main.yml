@@ -28,6 +28,9 @@ jobs:
     - name: Setup
       shell: bash -l {0}
       run: |
+        mkdir WABDB
+        mkdir HYDRA_JOBS
+        export HYDRA_FULL_ERROR=1
         conda env create -n cdvae --file env.ci.yml
         conda activate cdvae
         pip install -e .
@@ -36,4 +39,4 @@ jobs:
         export WABDB=$PWD/WABDB 
         export HYDRA_JOBS=$PWD/HYDRA_JOBS
         python cdvae/run.py data=perov expname=perov model.predict_property=True
-        which python
+      
