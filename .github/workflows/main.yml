@@ -59,17 +59,19 @@ jobs:
         python-version: [3.9]
 
     steps:
-    - shell: bash
+    
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
+    - shell: bash
     - name: Install conda
       run: |
         conda init bash
         conda env create -n cdvae --file env.kc.yml  
         source "$HOME/.bashrc"
+    - shell: bash
     - name: Activate conda
       run: |
         which conda
