@@ -28,7 +28,7 @@ jobs:
     - name: Setup
       shell: bash -l {0}
       run: |
-        conda env create -n cdvae --file env.kc.yml
+        conda env create -n cdvae --file env.ci.yml
         conda activate cdvae
         pip install -e .
         echo $PWD
