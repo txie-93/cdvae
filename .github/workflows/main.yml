@@ -19,18 +19,19 @@ jobs:
     - name: Install dependencies
       run: |
         
-        conda env create -f env.cpu.yml
+        conda env create -n cdvae --file env.kc.yml        
         conda activate cdvae
         pip install -e .
- 
-        
+        export PROJECT_ROOT=$PWD
+        export WABDB=$PWD/WABDB 
+        export HYDRA_JOBS=$PWD/HYDRA_JOBS        
 
-    - name: Lint
-      run: |
-        pip install flake8 pytest pycodestyle pydocstyle
-        pycodestyle --ignore E203,W503 --exclude=tests cdvae
-        pydocstyle --match-dir=core --match-dir=io --match-dir=io --match-dir=ai --match-dir=analysis --match-dir=db --match-dir=tasks --count cdvae
-        flake8 --ignore E203,W503 --exclude=tests --statistics --count --exit-zero cdvae
+#    - name: Lint
+#      run: |
+#        pip install flake8 pytest pycodestyle pydocstyle
+#        pycodestyle --ignore E203,W503 --exclude=tests cdvae
+#        pydocstyle --match-dir=core --match-dir=io --match-dir=io --match-dir=ai --match-dir=analysis --match-dir=db --match-dir=tasks --count cdvae
+#        flake8 --ignore E203,W503 --exclude=tests --statistics --count --exit-zero cdvae
 #     - name: Test with pytest
 #       run: |
 #         export DGLBACKEND=pytorch
