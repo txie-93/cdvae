@@ -2,40 +2,40 @@ name: cdvae-action
 
 on: [push, pull_request]
 
-jobs:
-  miniconda:
-    name: Miniconda ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-        matrix:
-            os: ["ubuntu-latest"]
-            python-version: ["3.8"]
-    steps:
-      - uses: actions/checkout@v2
-      - uses: goanpeca/setup-miniconda@v1
-        with:
-          activate-environment: cdvae
-          environment-file: env.kc.yml 
-          python-version: ${{ matrix.python-version }}
-          auto-activate-base: false
-          ACTIONS_ALLOW_UNSECURE_COMMANDS: true
-      - shell: bash -l {0}
-        run: |
-          conda info
-          conda list
-      - name: Lint
-        shell: bash -l {0}
-        run: |
-            conda init bash
-            conda activate cdvae
-            conda install flake8
-            python -m flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-            python -m flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-            pip install -e .
-            export PROJECT_ROOT=$PWD
-            export WABDB=$PWD/WABDB 
-            export HYDRA_JOBS=$PWD/HYDRA_JOBS  
-            python cdvae/run.py data=perov expname=perov model.predict_property=True
+# jobs:
+#   miniconda:
+#     name: Miniconda ${{ matrix.os }}
+#     runs-on: ${{ matrix.os }}
+#     strategy:
+#         matrix:
+#             os: ["ubuntu-latest"]
+#             python-version: ["3.8"]
+#     steps:
+#       - uses: actions/checkout@v2
+#       - uses: goanpeca/setup-miniconda@v1
+#         with:
+#           activate-environment: cdvae
+#           environment-file: env.kc.yml 
+#           python-version: ${{ matrix.python-version }}
+#           auto-activate-base: false
+#           ACTIONS_ALLOW_UNSECURE_COMMANDS: true
+#       - shell: bash -l {0}
+#         run: |
+#           conda info
+#           conda list
+#       - name: Lint
+#         shell: bash -l {0}
+#         run: |
+#             conda init bash
+#             conda activate cdvae
+#             conda install flake8
+#             python -m flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+#             python -m flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+#             pip install -e .
+#             export PROJECT_ROOT=$PWD
+#             export WABDB=$PWD/WABDB 
+#             export HYDRA_JOBS=$PWD/HYDRA_JOBS  
+#             python cdvae/run.py data=perov expname=perov model.predict_property=True
             
 #       - name: Run pytest
 #         shell: bash -l {0}
@@ -51,38 +51,31 @@ jobs:
 
 
 
-# jobs:
-#   build:
+jobs:
+  build:
 
-#     runs-on: ubuntu-latest
-#     strategy:
-#       matrix:
-#         python-version: [3.9]
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.9]
 
-#     steps:
-#     - uses: actions/checkout@v2
-#     - name: Set up Python ${{ matrix.python-version }}
-#     - uses: actions/setup-python@v2
-#       with:
-#         python-version: ${{ matrix.python-version }}
-#     - name: Install conda
-#     - shell: bash -l {0}
-#       run: |
-#         conda init bash
-#         conda env create -n cdvae --file env.kc.yml  
-#         source "$HOME/.bashrc"
-#     - name: Activate conda
-#     - shell: bash -l {0}
-#       run: |
-#         which conda
-#         conda init bash
-#         conda activate cdvae
-#         pip install -e .
-#         export PROJECT_ROOT=$PWD
-#         export WABDB=$PWD/WABDB 
-#         export HYDRA_JOBS=$PWD/HYDRA_JOBS 
-#         echo 'DONE'
-#         echo $WABDB
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+    - uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install conda
+        conda init bash
+        source ~/.bashrc
+        conda cdvae create -f env.kc.yml
+        conda activate cdvae
+        pip install -e .
+        export PROJECT_ROOT=$PWD
+        export WABDB=$PWD/WABDB 
+        export HYDRA_JOBS=$PWD/HYDRA_JOBS 
+        echo 'DONE'
+        echo $WABDB
         
         
 #      https://github.com/ben-heil/github_actions_test/blob/master/.github/workflows/miniconda.yml
