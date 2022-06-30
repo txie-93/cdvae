@@ -39,6 +39,6 @@ jobs:
         export WABDB=$PWD/WABDB 
         export WABDB_DIR=$PWD/WABDB
         export HYDRA_JOBS=$PWD/HYDRA_JOBS
-        python cdvae/run.py data=perov expname=perov
+        python cdvae/run.py data=carbon expname=carbon
         # python cdvae/run.py data=perov expname=perov model.predict_property=True
       
