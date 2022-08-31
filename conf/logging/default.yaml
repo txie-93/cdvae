@@ -10,10 +10,10 @@ progress_bar_refresh_rate: 20
 #   mode: 'online'
 #   group: ${expname}
 
-wandb_watch:
-  log: 'all'
-  log_freq: 500
+# wandb_watch:
+#   log: 'all'
+#   log_freq: 500
 
-lr_monitor:
-  logging_interval: "step"
-  log_momentum: False
+# lr_monitor:
+#   logging_interval: "step"
+#   log_momentum: False
