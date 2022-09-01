@@ -1,4 +1,5 @@
 ![alt text](https://github.com/knc6/cdvae/actions/workflows/main.yml/badge.svg)
+[![codecov](https://codecov.io/gh/knc6/cdvae/branch/main/graph/badge.svg)](https://app.codecov.io/gh/knc6/cdvae)
 # Crystal Diffusion Variational AutoEncoder
 
 This software implementes Crystal Diffusion Variational AutoEncoder (CDVAE), which generates the periodic structure of materials.

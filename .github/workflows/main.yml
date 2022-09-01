@@ -44,8 +44,7 @@ jobs:
         export HYDRA_JOBS=$PWD/HYDRA_JOBS
         coverage run -m pytest
         coverage report -m -i
-        codecov
-        #codecov --token="b61081a0-39de-44a8-8a9c-97d4be82af6d"
+        codecov --token="43acbae5-6738-4eae-967a-4f089e6c431e"
         #python cdvae/run.py data=carbon expname=carbon
         # python cdvae/run.py data=perov expname=perov model.predict_property=True
       
