@@ -5,7 +5,7 @@ random_seed: 42
 # training
 
 pl_trainer:
-  fast_dev_run: False # Enable this for debug purposes
+  fast_dev_run: True # Enable this for debug purposes
   gpus: 0
   precision: 32
   # max_steps: 10000
