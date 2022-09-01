@@ -36,8 +36,6 @@ jobs:
         pip install p-tqdm flake8 pytest pycodestyle pydocstyle codecov pytest-cov coverage
         echo 'PIP freeze'
         pip freeze
-        
-
         echo $PWD
         export HYDRA_FULL_ERROR=1
         export PROJECT_ROOT=$PWD
@@ -47,7 +45,7 @@ jobs:
         coverage run -m pytest
         coverage report -m -i
         codecov
-        codecov --token="b61081a0-39de-44a8-8a9c-97d4be82af6d"
+        #codecov --token="b61081a0-39de-44a8-8a9c-97d4be82af6d"
         #python cdvae/run.py data=carbon expname=carbon
         # python cdvae/run.py data=perov expname=perov model.predict_property=True
       
