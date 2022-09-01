@@ -33,12 +33,14 @@ jobs:
         conda env create -n cdvae --file env.ci.yml
         conda activate cdvae
         pip install -e .
+        pip install p-tqdm
         echo $PWD
         export HYDRA_FULL_ERROR=1
         export PROJECT_ROOT=$PWD
         export WABDB=$PWD/WABDB 
         export WABDB_DIR=$PWD/WABDB
         export HYDRA_JOBS=$PWD/HYDRA_JOBS
-        python cdvae/run.py data=carbon expname=carbon
+        pytest cdvae
+        #python cdvae/run.py data=carbon expname=carbon
         # python cdvae/run.py data=perov expname=perov model.predict_property=True
       
