@@ -26,4 +26,3 @@ early_stopping:
 model_checkpoints:
   save_top_k: 1
   verbose: False
-  
