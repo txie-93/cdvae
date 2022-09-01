@@ -105,7 +105,7 @@ def test_get_pbc_distances_cart():
 #    (3, 20),  # test small cutoff radius
 #    (6, 12),  # test if max_neighbors is satisfied
 #])
-"""
+#"""
 def test_radius_graph_pbc(max_radius=6, max_neighbors=12):
     from torch_geometric.data import Batch
     from cdvae.common.data_utils import get_scaler_from_data_list
@@ -159,7 +159,7 @@ def test_radius_graph_pbc(max_radius=6, max_neighbors=12):
             0].shape[0] <= max_neighbors
 
 
-"""
+#"""
 def test_compute_volume():
     batched_lattice = torch.Tensor([
         [[1., 0., 0.], [0., 2., 0.], [0., 0., 3.]],
@@ -170,4 +170,4 @@ def test_compute_volume():
     results = data_utils.compute_volume(batched_lattice)
 
     assert torch.allclose(true_volumes, results)
-# test_radius_graph_pbc()
+#test_radius_graph_pbc()
