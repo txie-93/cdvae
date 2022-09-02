@@ -4,6 +4,11 @@ import numpy as np
 import torch
 # from torch_scatter.scatter import scatter
 from cdvae.common import data_utils
+from torch_geometric.data import Batch
+from cdvae.common.data_utils import get_scaler_from_data_list
+from cdvae.pl_data.dataset import CrystDataset
+from cdvae.pl_modules.gnn import DimeNetPlusPlusWrap, GemNetTEncoder
+from torch_geometric.data import DataLoader
 
 
 def test_lattice_params_matrix():
@@ -106,12 +111,11 @@ def test_get_pbc_distances_cart():
 #    (6, 12),  # test if max_neighbors is satisfied
 #])
 #"""
-def test_radius_graph_pbc(max_radius=6, max_neighbors=12):
-    from torch_geometric.data import Batch
-    from cdvae.common.data_utils import get_scaler_from_data_list
+def test_pl_modules(max_radius=6, max_neighbors=12):
     dir_path = os.path.dirname(os.path.realpath(__file__))
     test_file_path = os.path.join(dir_path, 'test_data.csv')
-    from cdvae.pl_data.dataset import CrystDataset
+    print ('dir_path',dir_path)
+    print('test_file_path',test_file_path)
     dataset = CrystDataset(
         name='test',
         path=test_file_path,
@@ -130,13 +134,36 @@ def test_radius_graph_pbc(max_radius=6, max_neighbors=12):
     dataset.scaler = scaler
     data_list = [dataset[i] for i in range(len(dataset))]
     batch = Batch.from_data_list(data_list)
-    from cdvae.pl_modules.gnn import DimeNetPlusPlusWrap
-    from torch_geometric.data import DataLoader
-    loader = DataLoader(dataset, batch_size=2)
-    print('batch',batch,type(batch))
     dimenet = DimeNetPlusPlusWrap(1)
     out=dimenet(batch)
-    print('out',out)
+    dir_path = os.path.dirname(os.path.realpath(__file__))
+    json_path = os.path.join(dir_path, '..','pl_modules','gemnet','gemnet-dT.json')
+    gemnet=GemNetTEncoder(1,32,scale_file=json_path)
+    out_gem=gemnet(batch)
+    print ('out_gem',out_gem)
+def test_radius_graph_pbc(max_radius=6, max_neighbors=12):
+    dir_path = os.path.dirname(os.path.realpath(__file__))
+    test_file_path = os.path.join(dir_path, 'test_data.csv')
+    dataset = CrystDataset(
+        name='test',
+        path=test_file_path,
+        prop='formation_energy_per_atom',
+        niggli=True,
+        primitive=False,
+        graph_method='crystalnn',
+        lattice_scale_method='scale_length',
+        preprocess_workers=2,
+    )
+
+    scaler = get_scaler_from_data_list(
+        dataset.cached_data,
+        key=dataset.prop)
+
+    dataset.scaler = scaler
+    data_list = [dataset[i] for i in range(len(dataset))]
+    batch = Batch.from_data_list(data_list)
+    dimenet = DimeNetPlusPlusWrap(1)
+    out=dimenet(batch)
     edge_index, unit_cell, num_neighbors_image = data_utils.radius_graph_pbc_wrapper(
         batch, radius=max_radius, max_num_neighbors_threshold=max_neighbors,
         device=batch.num_atoms.device)
@@ -176,4 +203,6 @@ def test_compute_volume():
     results = data_utils.compute_volume(batched_lattice)
 
     assert torch.allclose(true_volumes, results)
+
+#test_pl_modules()
 #test_radius_graph_pbc()
