@@ -130,7 +130,13 @@ def test_radius_graph_pbc(max_radius=6, max_neighbors=12):
     dataset.scaler = scaler
     data_list = [dataset[i] for i in range(len(dataset))]
     batch = Batch.from_data_list(data_list)
-
+    from cdvae.pl_modules.gnn import DimeNetPlusPlusWrap
+    from torch_geometric.data import DataLoader
+    loader = DataLoader(dataset, batch_size=2)
+    print('batch',batch,type(batch))
+    dimenet = DimeNetPlusPlusWrap(1)
+    out=dimenet(batch)
+    print('out',out)
     edge_index, unit_cell, num_neighbors_image = data_utils.radius_graph_pbc_wrapper(
         batch, radius=max_radius, max_num_neighbors_threshold=max_neighbors,
         device=batch.num_atoms.device)
