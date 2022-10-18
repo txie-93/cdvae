@@ -136,7 +136,7 @@ def run(cfg: DictConfig) -> None:
         hydra.utils.log.info(f"found checkpoint: {ckpt}")
     else:
         ckpt = None
-          
+
     hydra.utils.log.info("Instantiating the Trainer")
     trainer = pl.Trainer(
         default_root_dir=hydra_dir,

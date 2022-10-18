@@ -56,6 +56,8 @@ datamodule:
         lattice_scale_method: ${data.lattice_scale_method}
         preprocess_workers: ${data.preprocess_workers}
 
+  scaler_path: ${data.root_path}
+
   num_workers:
     train: 0
     val: 0
