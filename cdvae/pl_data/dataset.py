@@ -16,7 +16,7 @@ class CrystDataset(Dataset):
     def __init__(self, name: ValueNode, path: ValueNode,
                  prop: ValueNode, niggli: ValueNode, primitive: ValueNode,
                  graph_method: ValueNode, preprocess_workers: ValueNode,
-                 lattice_scale_method: ValueNode,
+                 lattice_scale_method: ValueNode, scaler: ValueNode = None, lattice_scaler: ValueNode = None,
                  **kwargs):
         super().__init__()
         self.path = path
@@ -26,7 +26,10 @@ class CrystDataset(Dataset):
         self.niggli = niggli
         self.primitive = primitive
         self.graph_method = graph_method
+
         self.lattice_scale_method = lattice_scale_method
+        self.lattice_scaler = lattice_scaler
+        self.scaler = scaler
 
         self.cached_data = preprocess(
             self.path,
@@ -37,8 +40,8 @@ class CrystDataset(Dataset):
             prop_list=[prop])
 
         add_scaled_lattice_prop(self.cached_data, lattice_scale_method)
-        self.lattice_scaler = None
-        self.scaler = None
+        self.lattice_scaler = lattice_scaler
+        self.scaler = scaler
 
     def __len__(self) -> int:
         return len(self.cached_data)
