@@ -66,4 +66,4 @@ datamodule:
   batch_size:
     train: 512
     val: 256
-    test: 256
+    test: 128
