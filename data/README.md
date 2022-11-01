@@ -4,6 +4,8 @@ This directory contains 3 benchmark datasets for the problem of material generat
 
 - [Perov-5](perov_5) (Castelli et al., 2012): contains 19k perovksite materials, which share similar structure, but has different composition.
 
+- [Perov-5-dev](perov_5_dev) is the same as above, except it just contains the first 1024 samples (for dev purposes)
+
 - [Carbon-24](carbon_24) (Pickard, 2020): contains 10k carbon materials, which share the same composition, but have different structures.
 
 - [MP-20](mp_20) (Jain et al., 2013): contains 45k general inorganic materials, including most experimentally known materials with no more than 20 atoms in unit cell.
@@ -12,7 +14,7 @@ Detailed descriptions of the datasets and visualization of structures can be fou
 
 ## Baseline methods
 
-- [FTCP](https://github.com/PV-Lab/FTCP) 
+- [FTCP](https://github.com/PV-Lab/FTCP)
 - [Cond-DFC-VAE](https://github.com/by256/icsg3d)
 - [G-SchNet](https://github.com/atomistic-machine-learning/G-SchNet)
 - P-G-SchNet (our periodically adapted version of G-SchNet)
