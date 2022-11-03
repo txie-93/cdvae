@@ -16,7 +16,8 @@ from jarvis.db.jsonutils import dumpjson
 # /wrk/knc6/CDVAE/cdvae/HYDRA_JOBS/singlerun/2022-10-22/carbon
 # --tasks gen
 
-x = torch.load("HYDRA_JOBS/singlerun/2022-10-22/carbon/eval_gen.pt")
+# x = torch.load("HYDRA_JOBS/singlerun/2022-10-22/carbon/eval_gen.pt")
+x = torch.load("HYDRA_JOBS/singlerun/2022-11-02/custom/eval_gen.pt")
 num_atoms = x["num_atoms"]
 atom_types = x["atom_types"]
 frac_coords = x["frac_coords"]
@@ -80,4 +81,5 @@ for id_needed in range(num_atoms.shape[1]):
 
     atomic_structures.append(atoms.to_dict())
 
-dumpjson(data=atomic_structures, filename="eval_gen.json")
+print(atoms)
+dumpjson(data=atomic_structures, filename="eval_gen2d.json")
