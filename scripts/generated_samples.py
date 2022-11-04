@@ -1,23 +1,25 @@
 """Module to parse generated samples."""
 import torch
 from jarvis.core.atoms import Atoms
+from jarvis.core.atoms import pmg_to_atoms
 from jarvis.core.lattice import Lattice
 from jarvis.core.specie import atomic_numbers_to_symbols
 from jarvis.db.jsonutils import dumpjson
+from jarvis.analysis.structure.spacegroup import Spacegroup3D
+from collections import Counter
+from pymatgen.core.structure import Structure
+import pandas as pd
 
-# from jarvis.core.atoms import Atoms, pmg_to_atoms
-# from pymatgen.core.structure import Structure
-# from pymatgen.core.lattice import Lattice as Lat
+csv_path = "/wrk/knc6/CDVAE/c2db/cdvae/data/j2d/train.csv"
+df = pd.read_csv(csv_path)
+df["spg_numbs"] = df["cif"].apply(
+    lambda x: pmg_to_atoms(Structure.from_str(x, fmt="cif")).get_spacegroup[0]
+)
 
-# python cdvae/run.py data=carbon expname=carbon
-#  model.predict_property=True
-
-# python scripts/evaluate.py --model_path
-# /wrk/knc6/CDVAE/cdvae/HYDRA_JOBS/singlerun/2022-10-22/carbon
-# --tasks gen
-
-# x = torch.load("HYDRA_JOBS/singlerun/2022-10-22/carbon/eval_gen.pt")
-x = torch.load("HYDRA_JOBS/singlerun/2022-11-02/custom/eval_gen.pt")
+print("TRAIN SPG", Counter(df["spg_numbs"].values))
+print()
+gen_path = "/wrk/knc6/CDVAE/c2db/cdvae/HYDRA_JOBS_J2D/singlerun/2022-11-03/j2d/eval_gen.pt"
+x = torch.load(gen_path)
 num_atoms = x["num_atoms"]
 atom_types = x["atom_types"]
 frac_coords = x["frac_coords"]
@@ -33,6 +35,8 @@ for i, ii in enumerate(index_list):
     indice_tuples.append(tup)
 
 atomic_structures = []
+j_atomic_structures = []
+spg_numbs = []
 for id_needed in range(num_atoms.shape[1]):
     id_fracs = frac_coords[0].numpy()[
         indice_tuples[id_needed][0] : indice_tuples[id_needed][1]
@@ -56,6 +60,9 @@ for id_needed in range(num_atoms.shape[1]):
         coords=id_fracs,
         cartesian=False,
     )
+    spg_numb = Spacegroup3D(atoms).space_group_number
+    spg_numbs.append(spg_numb)
+
     # print()
     # print()
     # print()
@@ -80,6 +87,19 @@ for id_needed in range(num_atoms.shape[1]):
     # print()
 
     atomic_structures.append(atoms.to_dict())
+    j_atomic_structures.append(atoms)
+
+print("SPG Gen", Counter(spg_numbs))
 
 print(atoms)
+print()
+print(j_atomic_structures[0])
+print()
+print(j_atomic_structures[1])
+print()
+print(j_atomic_structures[2])
+print()
+print(j_atomic_structures[3])
+print()
+print(j_atomic_structures[10])
 dumpjson(data=atomic_structures, filename="eval_gen2d.json")
