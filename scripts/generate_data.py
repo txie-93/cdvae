@@ -3,6 +3,12 @@ from jarvis.db.figshare import data
 import random
 import numpy as np
 from jarvis.core.atoms import Atoms
+from pymatgen.analysis import local_env
+from pymatgen.analysis.graphs import StructureGraph
+
+CrystalNN = local_env.CrystalNN(
+    distance_cutoffs=None, x_diff_weight=-1, porous_adjustment=False
+)
 
 
 def get_id_train_val_test(
@@ -54,20 +60,38 @@ def get_id_train_val_test(
     return id_train, id_val, id_test
 
 
+check_graph = False
+
+# tag = "id"
+# dataset = "c2db"
+# prop = "gap"
+
+
 tag = "jid"
 dataset = "dft_2d"
 prop = "exfoliation_energy"
+
 dat = data(dataset)
 mem = []
-for i in dat:
+for ii, i in enumerate(dat):
+    # print(ii)
     if i[prop] != "na":
         info = {}
         info["material_id"] = i[tag]
-        info["cif"] = ((Atoms.from_dict(i["atoms"])).pymatgen_converter()).to(
-            fmt="cif"
-        )
-        info["prop"] = i[prop]
-        mem.append(info)
+        pmg = Atoms.from_dict(i["atoms"]).pymatgen_converter()
+        try:
+            if check_graph:
+                crystal_graph = StructureGraph.with_local_env_strategy(
+                    pmg, CrystalNN
+                )
+            info["cif"] = pmg.to(fmt="cif")
+            info["prop"] = i[prop]
+            mem.append(info)
+        except Exception as exp:
+            print(i)
+            print(Atoms.from_dict(i["atoms"]))
+            print()
+            pass
 
 
 id_train, id_val, id_test = get_id_train_val_test(total_size=len(mem))
