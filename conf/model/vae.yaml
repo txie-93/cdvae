@@ -4,6 +4,7 @@ latent_dim: 256
 fc_num_layers: 1
 max_atoms: ${data.max_atoms}
 cost_natom: 1.
+cost_spg: 1.
 cost_coord: 10.
 cost_type: 1.
 cost_lattice: 10.
