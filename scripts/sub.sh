@@ -9,9 +9,9 @@
 export TMPDIR=/scratch/$SLURM_JOB_ID
 export HYDRA_FULL_ERROR=1
 export PROJECT_ROOT=$PWD
-export WABDB=$PWD/WABDB_T
-export WABDB_DIR=$PWD/WABDB_T
-export HYDRA_JOBS=$PWD/HYDRA_JOBS_T
+export WABDB=$PWD/WABDB
+export WABDB_DIR=$PWD/WABDB
+export HYDRA_JOBS=$PWD/HYDRA_JOBS
 
 cd /wrk/knc6/CDVAE/cdvae
 conda activate cdvae
