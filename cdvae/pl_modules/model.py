@@ -630,19 +630,3 @@ class CDVAE(BaseModule):
             })
 
         return log_dict, loss
-
-
-@hydra.main(config_path=str(PROJECT_ROOT / "conf"), config_name="default")
-def main(cfg: omegaconf.DictConfig):
-    model: pl.LightningModule = hydra.utils.instantiate(
-        cfg.model,
-        optim=cfg.optim,
-        data=cfg.data,
-        logging=cfg.logging,
-        _recursive_=False,
-    )
-    return model
-
-
-if __name__ == "__main__":
-    main()

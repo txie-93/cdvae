@@ -137,17 +137,3 @@ class CrystDataModule(pl.LightningDataModule):
             f"{self.num_workers=}, "
             f"{self.batch_size=})"
         )
-
-
-@hydra.main(config_path=str(PROJECT_ROOT / "conf"), config_name="default")
-def main(cfg: omegaconf.DictConfig):
-    datamodule: pl.LightningDataModule = hydra.utils.instantiate(
-        cfg.data.datamodule, _recursive_=False
-    )
-    datamodule.setup('fit')
-    import pdb
-    pdb.set_trace()
-
-
-if __name__ == "__main__":
-    main()
