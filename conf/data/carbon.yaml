@@ -1,4 +1,4 @@
-root_path: ${oc.env:PROJECT_ROOT}/data/carbon_24
+root_path: ${project_root:}/data/carbon_24
 prop: energy_per_atom
 num_targets: 1
 # prop: scaled_lattice

@@ -1,5 +1,3 @@
-expname: test
-
 expgroup: test
 expname: ${expgroup}_${now:%m-%d_%H-%M}
 
