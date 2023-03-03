@@ -1,26 +1,20 @@
 expname: test
 
-# metadata specialised for each experiment
+expgroup: test
+expname: ${expgroup}_${now:%m-%d_%H-%M}
+
 core:
   version: 0.0.1
   tags:
-    - ${now:%Y-%m-%d}
-
-hydra:
-  run:
-    dir: ${oc.env:HYDRA_JOBS}/singlerun/${now:%Y-%m-%d}/${expname}/
-
-  sweep:
-    dir: ${oc.env:HYDRA_JOBS}/multirun/${now:%Y-%m-%d}/${expname}/
-    subdir: ${hydra.job.num}_${hydra.job.id}
-
-  job:
-    env_set:
-      WANDB_START_METHOD: thread
-      WANDB_DIR: ${oc.env:WABDB_DIR}
+    - ${expgroup}
+    - Year=${now:%Y}
+    - Month=${now:%m}
+    - Day=${now:%d}
 
 defaults:
+  - _self_
   - data: default
+  - hydra: default
   - logging: default
   - model: vae
   - optim: default

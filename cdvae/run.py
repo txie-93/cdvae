@@ -13,10 +13,12 @@ from pytorch_lightning.callbacks import (
     EarlyStopping,
     LearningRateMonitor,
     ModelCheckpoint,
+    TQDMProgressBar
 )
 from pytorch_lightning.loggers import WandbLogger
 
 from cdvae.common.utils import log_hyperparameters, PROJECT_ROOT
+from cdvae.common.resolvers import register_resolvers
 
 
 def build_callbacks(cfg: DictConfig) -> List[Callback]:
@@ -86,7 +88,8 @@ def run(cfg: DictConfig) -> None:
     # Instantiate datamodule
     hydra.utils.log.info(f"Instantiating <{cfg.data.datamodule._target_}>")
     datamodule: pl.LightningDataModule = hydra.utils.instantiate(
-        cfg.data.datamodule, _recursive_=False
+        cfg.data.datamodule, 
+        _recursive_=False
     )
 
     # Instantiate model
@@ -111,31 +114,22 @@ def run(cfg: DictConfig) -> None:
     # Logger instantiation/configuration
     wandb_logger = None
     if "wandb" in cfg.logging:
-        hydra.utils.log.info("Instantiating <WandbLogger>")
+        hydra.utils.log.info(f"Instantiating <WandbLogger>")
         wandb_config = cfg.logging.wandb
         wandb_logger = WandbLogger(
             **wandb_config,
             tags=cfg.core.tags,
         )
-        hydra.utils.log.info("W&B is now watching <{cfg.logging.wandb_watch.log}>!")
+        hydra.utils.log.info(f"W&B is now watching <{cfg.logging.wandb_watch.log}>!")
         wandb_logger.watch(
             model,
             log=cfg.logging.wandb_watch.log,
             log_freq=cfg.logging.wandb_watch.log_freq,
         )
 
-    # Store the YaML config separately into the wandb dir
+    # Store the YaML config separately into the hydra dir
     yaml_conf: str = OmegaConf.to_yaml(cfg=cfg)
     (hydra_dir / "hparams.yaml").write_text(yaml_conf)
-
-    # Load checkpoint (if exist)
-    ckpts = list(hydra_dir.glob('*.ckpt'))
-    if len(ckpts) > 0:
-        ckpt_epochs = np.array([int(ckpt.parts[-1].split('-')[0].split('=')[1]) for ckpt in ckpts])
-        ckpt = str(ckpts[ckpt_epochs.argsort()[-1]])
-        hydra.utils.log.info(f"found checkpoint: {ckpt}")
-    else:
-        ckpt = None
           
     hydra.utils.log.info("Instantiating the Trainer")
     trainer = pl.Trainer(
@@ -144,8 +138,6 @@ def run(cfg: DictConfig) -> None:
         callbacks=callbacks,
         deterministic=cfg.train.deterministic,
         check_val_every_n_epoch=cfg.logging.val_check_interval,
-        progress_bar_refresh_rate=cfg.logging.progress_bar_refresh_rate,
-        resume_from_checkpoint=ckpt,
         **cfg.train.pl_trainer,
     )
     log_hyperparameters(trainer=trainer, model=model, cfg=cfg)
@@ -161,10 +153,11 @@ def run(cfg: DictConfig) -> None:
         wandb_logger.experiment.finish()
 
 
-@hydra.main(config_path=str(PROJECT_ROOT / "conf"), config_name="default")
+@hydra.main(config_path=str(PROJECT_ROOT / "conf"), config_name="default", version_base='1.3')
 def main(cfg: omegaconf.DictConfig):
     run(cfg)
 
 
 if __name__ == "__main__":
+    register_resolvers()
     main()

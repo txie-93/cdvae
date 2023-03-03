@@ -1,0 +1,11 @@
+run:
+  dir: ${project_root:}/runs/${expname}/
+
+sweep:
+  dir: ${project_root:}/runs/multirun/${expname}/
+  subdir: ${hydra.job.num}_${hydra.job.id}
+
+job:
+  env_set:
+    WANDB_START_METHOD: thread
+    WANDB_DIR: ${project_root:}
