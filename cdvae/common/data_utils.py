@@ -4,6 +4,9 @@ import networkx as nx
 import torch
 import copy
 import itertools
+import pickle
+
+from pathlib import Path
 
 from pymatgen.core.structure import Structure
 from pymatgen.core.lattice import Lattice
@@ -649,6 +652,14 @@ def get_scaler_from_data_list(data_list, key):
 
 def preprocess(input_file, num_workers, niggli, primitive, graph_method,
                prop_list):
+    
+    save_name = Path(Path(input_file).parent.name + '.pkl')
+    
+    if save_name.exists():
+        with open(save_name, 'rb') as f:
+            ordered_results = pickle.load(f)
+        return ordered_results
+    
     df = pd.read_csv(input_file)
 
     def process_one(row, niggli, primitive, graph_method, prop_list):
@@ -678,6 +689,10 @@ def preprocess(input_file, num_workers, niggli, primitive, graph_method,
     ordered_results = [mpid_to_results[df.iloc[idx]['material_id']]
                        for idx in range(len(df))]
 
+
+    with open(save_name, 'wb') as f:
+        pickle.dump(ordered_results, f, pickle.HIGHEST_PROTOCOL)
+    
     return ordered_results
 
 
