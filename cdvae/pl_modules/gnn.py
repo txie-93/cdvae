@@ -4,7 +4,6 @@
 import torch
 import torch.nn as nn
 from torch_scatter import scatter
-from torch_geometric.nn.acts import swish
 from torch_geometric.nn.inits import glorot_orthogonal
 from torch_geometric.nn.models.dimenet import (
     BesselBasisLayer,
@@ -37,7 +36,7 @@ class InteractionPPBlock(torch.nn.Module):
         num_radial,
         num_before_skip,
         num_after_skip,
-        act=swish,
+        act=nn.SiLU(),
     ):
         super(InteractionPPBlock, self).__init__()
         self.act = act
@@ -136,7 +135,7 @@ class OutputPPBlock(torch.nn.Module):
         out_emb_channels,
         out_channels,
         num_layers,
-        act=swish,
+        act=nn.SiLU(),
     ):
         super(OutputPPBlock, self).__init__()
         self.act = act
@@ -189,7 +188,7 @@ class DimeNetPlusPlus(torch.nn.Module):
         num_output_layers: (int, optional): Number of linear layers for the
             output blocks. (default: :obj:`3`)
         act: (function, optional): The activation funtion.
-            (default: :obj:`swish`)
+            (default: :obj:`nn.SiLU()`)
     """
 
     url = "https://github.com/klicperajo/dimenet/raw/master/pretrained"
@@ -209,7 +208,7 @@ class DimeNetPlusPlus(torch.nn.Module):
         num_before_skip=1,
         num_after_skip=2,
         num_output_layers=3,
-        act=swish,
+        act=nn.SiLU(),
     ):
         super(DimeNetPlusPlus, self).__init__()
 
