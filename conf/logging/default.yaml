@@ -4,7 +4,7 @@ progress_bar_refresh_rate: 20
 
 wandb:
   name: ${expname}
-  project: crystal_generation_mit
+  project: CDVAE
   entity: null
   log_model: True
   mode: 'online'
