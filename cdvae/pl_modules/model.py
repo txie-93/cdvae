@@ -157,18 +157,27 @@ class CDVAE(BaseModule):
             self.fc_property = build_mlp(self.hparams.latent_dim, self.hparams.hidden_dim,
                                          self.hparams.fc_num_layers, 1)
 
-        sigmas = torch.tensor(np.exp(np.linspace(
-            np.log(self.hparams.sigma_begin),
-            np.log(self.hparams.sigma_end),
-            self.hparams.num_noise_level)), dtype=torch.float32)
-
+        sigmas = torch.tensor(
+            np.exp(
+                np.linspace(
+                    np.log(self.hparams.sigma_begin),
+                    np.log(self.hparams.sigma_end),
+                    self.hparams.num_noise_level
+                )
+            ), 
+            dtype = torch.float32
+        )
         self.sigmas = nn.Parameter(sigmas, requires_grad=False)
 
-        type_sigmas = torch.tensor(np.exp(np.linspace(
-            np.log(self.hparams.type_sigma_begin),
-            np.log(self.hparams.type_sigma_end),
-            self.hparams.num_noise_level)), dtype=torch.float32)
-
+        type_sigmas = torch.tensor(
+            np.exp(
+                np.linspace(
+                    np.log(self.hparams.type_sigma_begin),
+                    np.log(self.hparams.type_sigma_end),
+                    self.hparams.num_noise_level
+                )
+            ), dtype=torch.float32
+        )
         self.type_sigmas = nn.Parameter(type_sigmas, requires_grad=False)
 
         self.embedding = torch.zeros(100, 92)
@@ -311,14 +320,27 @@ class CDVAE(BaseModule):
         # hacky way to resolve the NaN issue. Will need more careful debugging later.
         mu, log_var, z = self.encode(batch)
 
-        (pred_num_atoms, pred_lengths_and_angles, pred_lengths, pred_angles,
-         pred_composition_per_atom) = self.decode_stats(
-            z, batch.num_atoms, batch.lengths, batch.angles, teacher_forcing)
+        (
+            pred_num_atoms, 
+            pred_lengths_and_angles, 
+            pred_lengths, 
+            pred_angles,
+            pred_composition_per_atom
+        ) = self.decode_stats(
+            z, 
+            batch.num_atoms, 
+            batch.lengths, 
+            batch.angles, 
+            teacher_forcing
+        )
 
         # sample noise levels.
-        noise_level = torch.randint(0, self.sigmas.size(0),
-                                    (batch.num_atoms.size(0),),
-                                    device=self.device)
+        noise_level = torch.randint(
+            0, 
+            self.sigmas.size(0),
+            [batch.num_atoms.size(0)],
+            device=self.device
+        )
         used_sigmas_per_atom = self.sigmas[noise_level].repeat_interleave(
             batch.num_atoms, dim=0)
 
@@ -390,14 +412,28 @@ class CDVAE(BaseModule):
             'z': z,
         }
 
-    def generate_rand_init(self, pred_composition_per_atom, pred_lengths,
-                           pred_angles, num_atoms, batch):
-        rand_frac_coords = torch.rand(num_atoms.sum(), 3,
-                                      device=num_atoms.device)
-        pred_composition_per_atom = F.softmax(pred_composition_per_atom,
-                                              dim=-1)
+    def generate_rand_init(
+        self, 
+        pred_composition_per_atom, 
+        pred_lengths,
+        pred_angles, 
+        num_atoms, 
+        batch
+    ):
+        rand_frac_coords = torch.rand(
+            num_atoms.sum(), 
+            3,
+            device = num_atoms.device
+        )
+        pred_composition_per_atom = F.softmax(
+            pred_composition_per_atom,
+            dim = -1
+        )
         rand_atom_types = self.sample_composition(
-            pred_composition_per_atom, num_atoms)
+            pred_composition_per_atom, 
+            num_atoms
+        )
+        
         return rand_frac_coords, rand_atom_types
 
     def sample_composition(self, composition_prob, num_atoms):
@@ -437,14 +473,18 @@ class CDVAE(BaseModule):
             all_sampled_comp.append(sampled_comp)
 
         all_sampled_comp = torch.cat(all_sampled_comp, dim=0)
+        
         assert all_sampled_comp.size(0) == num_atoms.sum()
+        
         return all_sampled_comp
 
     def predict_num_atoms(self, z):
+        
         return self.fc_num_atoms(z)
 
     def predict_property(self, z):
         self.scaler.match_device(z)
+        
         return self.scaler.inverse_transform(self.fc_property(z))
 
     def predict_lattice(self, z, num_atoms):
@@ -457,17 +497,21 @@ class CDVAE(BaseModule):
         if self.hparams.data.lattice_scale_method == 'scale_length':
             pred_lengths = pred_lengths * num_atoms.view(-1, 1).float()**(1/3)
         # <pred_lengths_and_angles> is scaled.
+        
         return pred_lengths_and_angles, pred_lengths, pred_angles
 
     def predict_composition(self, z, num_atoms):
         z_per_atom = z.repeat_interleave(num_atoms, dim=0)
         pred_composition_per_atom = self.fc_composition(z_per_atom)
+        
         return pred_composition_per_atom
 
     def num_atom_loss(self, pred_num_atoms, batch):
+        
         return F.cross_entropy(pred_num_atoms, batch.num_atoms)
 
     def property_loss(self, z, batch):
+        
         return F.mse_loss(self.fc_property(z), batch.y)
 
     def lattice_loss(self, pred_lengths_and_angles, batch):
@@ -506,25 +550,36 @@ class CDVAE(BaseModule):
             (target_cart_coord_diff - pred_cart_coord_diff)**2, dim=1)
 
         loss_per_atom = 0.5 * loss_per_atom * used_sigmas_per_atom**2
+        
         return scatter(loss_per_atom, batch.batch, reduce='mean').mean()
 
-    def type_loss(self, pred_atom_types, target_atom_types,
-                  used_type_sigmas_per_atom, batch):
+    def type_loss(
+        self, 
+        pred_atom_types, 
+        target_atom_types,
+        used_type_sigmas_per_atom, 
+        batch
+    ):
         target_atom_types = target_atom_types - 1
         loss = F.cross_entropy(
             pred_atom_types, target_atom_types, reduction='none')
         # rescale loss according to noise
         loss = loss / used_type_sigmas_per_atom
+        
         return scatter(loss, batch.batch, reduce='mean').mean()
 
     def kld_loss(self, mu, log_var):
         kld_loss = torch.mean(
-            -0.5 * torch.sum(1 + log_var - mu**2 - log_var.exp(), dim=1), dim=0)
+            -0.5 * torch.sum(1 + log_var - mu**2 - log_var.exp(), dim=1),
+            dim=0
+        )
+        
         return kld_loss
 
     def training_step(self, batch: Any, batch_idx: int) -> torch.Tensor:
         teacher_forcing = (
-            self.current_epoch <= self.hparams.teacher_forcing_max_epoch)
+            self.current_epoch <= self.hparams.teacher_forcing_max_epoch
+        )
         outputs = self(batch, teacher_forcing, training=True)
         log_dict, loss = self.compute_stats(batch, outputs, prefix='train')
         self.log_dict(
@@ -533,6 +588,7 @@ class CDVAE(BaseModule):
             on_epoch=True,
             prog_bar=True,
         )
+        
         return loss
 
     def validation_step(self, batch: Any, batch_idx: int) -> torch.Tensor:
@@ -544,6 +600,7 @@ class CDVAE(BaseModule):
             on_epoch=True,
             prog_bar=True,
         )
+        
         return loss
 
     def test_step(self, batch: Any, batch_idx: int) -> torch.Tensor:
@@ -552,6 +609,7 @@ class CDVAE(BaseModule):
         self.log_dict(
             log_dict,
         )
+        
         return loss
 
     def compute_stats(self, batch, outputs, prefix):

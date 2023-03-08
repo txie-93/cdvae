@@ -84,7 +84,8 @@ chemical_symbols = [
 
 
 CrystalNN = local_env.CrystalNN(
-    distance_cutoffs=None, x_diff_weight=-1, porous_adjustment=False)
+    distance_cutoffs=None, x_diff_weight=-1, porous_adjustment=False
+)
 
 
 def build_crystal(crystal_str, niggli=True, primitive=False):
@@ -98,9 +99,9 @@ def build_crystal(crystal_str, niggli=True, primitive=False):
         crystal = crystal.get_reduced_structure()
 
     canonical_crystal = Structure(
-        lattice=Lattice.from_parameters(*crystal.lattice.parameters),
-        species=crystal.species,
-        coords=crystal.frac_coords,
+        lattice = Lattice.from_parameters(*crystal.lattice.parameters),
+        species = crystal.species,
+        coords = crystal.frac_coords,
         coords_are_cartesian=False,
     )
     # match is gaurantteed because cif only uses lattice params & frac_coords
@@ -199,18 +200,30 @@ def lattice_params_to_matrix_torch(lengths, angles):
     val = torch.clamp(val, -1., 1.)
     gamma_star = torch.arccos(val)
 
-    vector_a = torch.stack([
-        lengths[:, 0] * sins[:, 1],
-        torch.zeros(lengths.size(0), device=lengths.device),
-        lengths[:, 0] * coses[:, 1]], dim=1)
-    vector_b = torch.stack([
-        -lengths[:, 1] * sins[:, 0] * torch.cos(gamma_star),
-        lengths[:, 1] * sins[:, 0] * torch.sin(gamma_star),
-        lengths[:, 1] * coses[:, 0]], dim=1)
-    vector_c = torch.stack([
-        torch.zeros(lengths.size(0), device=lengths.device),
-        torch.zeros(lengths.size(0), device=lengths.device),
-        lengths[:, 2]], dim=1)
+    vector_a = torch.stack(
+        [
+            lengths[:, 0] * sins[:, 1],
+            torch.zeros(lengths.size(0), device=lengths.device),
+            lengths[:, 0] * coses[:, 1]
+        ], 
+        dim=1
+    )
+    vector_b = torch.stack(
+        [
+            -lengths[:, 1] * sins[:, 0] * torch.cos(gamma_star),
+            lengths[:, 1] * sins[:, 0] * torch.sin(gamma_star),
+            lengths[:, 1] * coses[:, 0]
+        ], 
+        dim=1
+    )
+    vector_c = torch.stack(
+        [
+            torch.zeros(lengths.size(0), device=lengths.device),
+            torch.zeros(lengths.size(0), device=lengths.device),
+            lengths[:, 2]
+        ], 
+        dim=1
+    )
 
     return torch.stack([vector_a, vector_b, vector_c], dim=1)
 
@@ -227,6 +240,7 @@ def compute_volume(batch_lattice):
 
 def lengths_angles_to_volume(lengths, angles):
     lattice = lattice_params_to_matrix_torch(lengths, angles)
+    
     return compute_volume(lattice)
 
 
@@ -237,11 +251,14 @@ def lattice_matrix_to_params(matrix):
     for i in range(3):
         j = (i + 1) % 3
         k = (i + 2) % 3
-        angles[i] = abs_cap(np.dot(matrix[j], matrix[k]) /
-                            (lengths[j] * lengths[k]))
+        angles[i] = abs_cap(
+            np.dot(matrix[j], matrix[k]) / (lengths[j]*lengths[k])
+        )
+        
     angles = np.arccos(angles) * 180.0 / np.pi
     a, b, c = lengths
     alpha, beta, gamma = angles
+    
     return a, b, c, alpha, beta, gamma
 
 
@@ -269,6 +286,7 @@ def cart_to_frac_coords(
     inv_lattice = torch.linalg.pinv(lattice)
     inv_lattice_nodes = torch.repeat_interleave(inv_lattice, num_atoms, dim=0)
     frac_coords = torch.einsum('bi,bij->bj', cart_coords, inv_lattice_nodes)
+    
     return (frac_coords % 1.)
 
 
@@ -318,17 +336,40 @@ def get_pbc_distances(
     return out
 
 
-def radius_graph_pbc_wrapper(data, radius, max_num_neighbors_threshold, device):
+def radius_graph_pbc_wrapper(
+    data, 
+    radius, 
+    max_num_neighbors_threshold, 
+    device
+):
     cart_coords = frac_to_cart_coords(
-        data.frac_coords, data.lengths, data.angles, data.num_atoms)
+        data.frac_coords, 
+        data.lengths, 
+        data.angles, 
+        data.num_atoms
+    )
+    
     return radius_graph_pbc(
-        cart_coords, data.lengths, data.angles, data.num_atoms, radius,
-        max_num_neighbors_threshold, device)
+        cart_coords, 
+        data.lengths, 
+        data.angles, 
+        data.num_atoms, 
+        radius,
+        max_num_neighbors_threshold, 
+        device
+    )
 
 
-def radius_graph_pbc(cart_coords, lengths, angles, num_atoms,
-                     radius, max_num_neighbors_threshold, device,
-                     topk_per_pair=None):
+def radius_graph_pbc(
+    cart_coords, 
+    lengths, 
+    angles, 
+    num_atoms,
+    radius, 
+    max_num_neighbors_threshold, 
+    device,
+    topk_per_pair = None
+):
     """Computes pbc graph edges under pbc.
 
     topk_per_pair: (num_atom_pairs,), select topk edges per atom pair
@@ -340,7 +381,8 @@ def radius_graph_pbc(cart_coords, lengths, angles, num_atoms,
     # position of the atoms
     atom_pos = cart_coords
 
-    # Before computing the pairwise distances between atoms, first create a list of atom indices to compare for the entire batch
+    # Before computing the pairwise distances between atoms, 
+    # first create a list of atom indices to compare for the entire batch
     num_atoms_per_image = num_atoms
     num_atoms_per_image_sqr = (num_atoms_per_image ** 2).long()
 
@@ -647,6 +689,7 @@ def get_scaler_from_data_list(data_list, key):
     targets = torch.tensor([d[key] for d in data_list])
     scaler = StandardScalerTorch()
     scaler.fit(targets)
+    
     return scaler
 
 
