@@ -613,7 +613,7 @@ def min_distance_sqr_pbc(cart_coords1, cart_coords2, lengths, angles,
     data_cell = torch.transpose(lattice, 1, 2)
     pbc_offsets = torch.bmm(data_cell, unit_cell_batch)
     pbc_offsets_per_atom = torch.repeat_interleave(
-        pbc_offsets, num_atoms, dim=0
+        pbc_offsets.clone(), num_atoms, dim=0
     )
 
     # Expand the positions and indices for the 9 cells
@@ -653,8 +653,7 @@ class StandardScalerTorch(object):
         self.means = means
         self.stds = stds
 
-    def fit(self, X):
-        X = torch.tensor(X, dtype=torch.float)
+    def fit(self, X: torch.FloatTensor):
         self.means = torch.mean(X, dim=0)
         # https://github.com/pytorch/pytorch/issues/29372
         self.stds = torch.std(X, dim=0, unbiased=False) + EPSILON
@@ -686,7 +685,9 @@ class StandardScalerTorch(object):
 
 
 def get_scaler_from_data_list(data_list, key):
-    targets = torch.tensor([d[key] for d in data_list])
+    targets = torch.FloatTensor(
+        np.array([d[key] for d in data_list])
+    )
     scaler = StandardScalerTorch()
     scaler.fit(targets)
     
