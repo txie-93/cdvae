@@ -37,11 +37,17 @@ class BaseModule(pl.LightningModule):
             self.hparams.optim.optimizer, params=self.parameters(), _convert_="partial"
         )
         if not self.hparams.optim.use_lr_scheduler:
-            return [opt]
-        scheduler = hydra.utils.instantiate(
-            self.hparams.optim.lr_scheduler, optimizer=opt
-        )
-        return {"optimizer": opt, "lr_scheduler": scheduler, "monitor": "val_loss"}
+            return {"optimizer": opt}
+        
+        lr_scheduler_config = {
+            'scheduler':  hydra.utils.instantiate(
+                self.hparams.optim.lr_scheduler, optimizer=opt,
+            ),
+            'interval': 'epoch',
+            'frequency': 1,
+            'monitor': 'val_loss',
+        }
+        return {"optimizer": opt, "lr_scheduler": lr_scheduler_config}
 
 
 class CrystGNN_Supervise(BaseModule):
