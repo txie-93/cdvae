@@ -10,30 +10,31 @@ on:
 
 jobs:
   build:
-    env:
-      CONDA_PREFIX: /usr/share/miniconda/
 
-    runs-on: ${{ matrix.operating-system }}
+    runs-on: ubuntu-latest
     strategy:
       matrix:
-        operating-system: [ubuntu-latest]
         python-version: [3.9]
 
     steps:
     - uses: actions/checkout@v2
-    - uses: conda-incubator/setup-miniconda@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
       with:
-        auto-update-conda: true
         python-version: ${{ matrix.python-version }}
-    - name: Setup
-      shell: bash -l {0}
+    - name: Install dependencies
       run: |
+        python -m pip install --upgrade pip
+        pip install torch==2.0.0
+        pip install -q torch-scatter -f https://data.pyg.org/whl/torch-2.0.0.html
+        pip install -q torch-sparse -f https://data.pyg.org/whl/torch-2.0.0.html
+        pip install -q git+https://github.com/pyg-team/pytorch_geometric.git
+        pip install -q pytorch-lightning wandb torchmetrics==0.6.0 pymatgen==2022.4.26
+        pip install -q hydra-core jarvis-tools python-dotenv p-tqdm
+        pip install -q p-tqdm flake8 pytest pycodestyle pydocstyle codecov pytest-cov coverage
+        pip install -e .
         mkdir WABDB
         mkdir HYDRA_JOBS
-        conda env create -n cdvae --file env.ci.yml
-        conda activate cdvae
-        pip install -e .
-        pip install p-tqdm flake8 pytest pycodestyle pydocstyle codecov pytest-cov coverage
         echo 'PIP freeze'
         pip freeze
         echo $PWD
@@ -45,6 +46,6 @@ jobs:
         coverage run -m pytest
         coverage report -m -i
         codecov --token="43acbae5-6738-4eae-967a-4f089e6c431e"
-        #python cdvae/run.py data=carbon expname=carbon
+        python cdvae/run.py data=carbon expname=carbon
         # python cdvae/run.py data=perov expname=perov model.predict_property=True
       
